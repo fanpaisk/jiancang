@@ -1,0 +1,18 @@
+node_modules/
+dist/
+.pnpm-store/
+*.local
+.env
+.env.*
+.DS_Store
+Thumbs.db
+coverage/
+playwright-report/
+*.tsbuildinfo
+
+# OCR 静态资源由 scripts/copy-ocr-assets.mjs 在 dev/build 前生成，不入库
+public/tesseract/
+public/tessdata/
+
+# 真实持仓截图只留在本地做 OCR 复测，绝不进仓库/发布产物
+tests/fixtures/

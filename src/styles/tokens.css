@@ -1,0 +1,66 @@
+/**
+ * 设计令牌：颜色、圆角、间距、字号、阴影、层级。
+ * 页面/组件只引用变量，换主题或整体调风格时改这一处。
+ */
+:root {
+  /* 颜色 */
+  --bg: #f4f6fb;
+  --bg-glow: #e4ecff;
+  --card: #ffffff;
+  --card-soft: #fbfcfe;
+  --ink: #0f172a;
+  --ink-soft: #334155;
+  --muted: #64748b;
+  --muted-2: #94a3b8;
+  --line: #e6ebf2;
+  --line-strong: #cfd9e8;
+  --brand: #2563eb;
+  --brand-strong: #1d4ed8;
+  --brand-soft: #eff4ff;
+  --brand-line: #dbe6ff;
+  --brand-line-strong: #c7d8ff;
+  --up: #e11d48;
+  --down: #059669;
+  --warn: #b45309;
+  --warn-soft: #fffbeb;
+  --warn-line: #fde68a;
+  --danger: #b91c1c;
+  --danger-soft: #fef2f2;
+
+  /* 形状 */
+  --radius: 16px;
+  --radius-sm: 8px;
+  --radius-control: 10px;
+  --radius-card: 16px;
+  --radius-pill: 999px;
+  --tap: 44px;
+
+  /* 间距 */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+
+  /* 字号 */
+  --font-xs: 11.5px;
+  --font-sm: 12.5px;
+  --font-md: 14px;
+  --font-lg: 15px;
+  --font-xl: 18px;
+  --font-2xl: 22px;
+  --font-hero: 52px;
+
+  /* 阴影 */
+  --shadow-1: 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-2: 0 1px 2px rgba(15, 23, 42, 0.04), 0 14px 34px -22px rgba(15, 23, 42, 0.35);
+  --shadow-3: 0 18px 50px -18px rgba(15, 23, 42, 0.35);
+
+  /* 层级 */
+  --z-tabbar: 10;
+  --z-sheet: 40;
+  --z-toast: 60;
+
+  color-scheme: light;
+}

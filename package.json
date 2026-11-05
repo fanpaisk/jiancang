@@ -1,0 +1,45 @@
+{
+  "name": "jiancang",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "减仓计算器 —— 抄四个数，算清楚该减多少",
+  "license": "MIT",
+  "homepage": "https://jiancang.pages.dev/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fanpaisk/jiancang.git"
+  },
+  "bugs": {
+    "url": "https://github.com/fanpaisk/jiancang/issues"
+  },
+  "packageManager": "pnpm@11.7.0",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "predev": "node scripts/copy-ocr-assets.mjs",
+    "dev": "vite",
+    "prebuild": "node scripts/copy-ocr-assets.mjs",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "verify": "pnpm typecheck && pnpm test && pnpm build"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "tesseract.js": "^7.0.0"
+  },
+  "devDependencies": {
+    "@tesseract.js-data/chi_sim": "^1.0.0",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.3",
+    "vitest": "^3.2.7"
+  }
+}
