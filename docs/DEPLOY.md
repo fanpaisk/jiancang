@@ -3,8 +3,10 @@
 ## 现在的状态
 
 - `dist/` 已经是可直接部署的产物（`pnpm build` 生成），约 13.3 MB，主要是三份 tesseract wasm 变体。
-- 已包含：`favicon.svg`、`og.png`、`_headers`（CSP + 安全头 + 缓存）、`_redirects`、`robots.txt`、
+- 已包含：`favicon.svg`、`og.png`、`_headers`（CSP + 安全头 + 缓存）、`robots.txt`、
   `sitemap.xml`、`manifest.webmanifest`、`sw.js`、`icons/`（PWA 图标）。
+- 不设 `_redirects` 的 SPA 回退：本项目没有客户端路由，回退会让所有不存在的资源返回
+  200 + `index.html`（`/_t.png` 曾因此看起来“存在”）。删掉后，缺失资源会正常 404。
 - 纯静态，**没有任何后端依赖**，托管费用为 0。
 - **发布产物里没有真实持仓截图**：`public/_t*.png` 已移到 gitignore 的 `tests/fixtures/`。
 - **当前线上地址**：<https://jiancang-b3b.pages.dev/>（项目名 `jiancang-b3b`，原因见下）
