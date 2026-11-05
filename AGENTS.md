@@ -15,7 +15,8 @@
 现在减还是等几天。不做投资建议，不联网，数据只存浏览器 localStorage。
 
 技术栈：Vite + React + TypeScript；`src/core/` 纯函数；Vitest；无后端。
-仓库：<https://github.com/fanpaisk/jiancang>；CI 在 `.github/workflows/ci.yml`。
+仓库：<https://github.com/fanpaisk/jiancang>；线上：<https://jiancang-b3b.pages.dev/>；
+CI 在 `.github/workflows/ci.yml`。
 
 ## 硬约束
 

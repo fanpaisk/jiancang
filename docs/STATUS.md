@@ -5,8 +5,8 @@
 ## 一句话
 
 **B 路线第一批包装已完成**：真实持仓截图移出发布产物、示例数据合成化、状态/页面/外壳解耦、
-设计令牌与通用组件、PWA、CSP、CI 都已落地。`typecheck` / `test` / `build` 全绿；
-**尚未部署，OCR 仍未复测**。
+设计令牌与通用组件、PWA、CSP、CI 都已落地，并已部署到
+<https://jiancang-b3b.pages.dev/>。`typecheck` / `test` / `build` 全绿；**OCR 仍未复测**。
 
 ## 已验收（本次改动后重跑）
 
@@ -17,6 +17,7 @@
 | 构建 | `pnpm build` | 成功，主包 211.17 kB（gzip 70.16 kB），CSS 25.47 kB |
 | 产物 | `dist/` | 13.3 MB，已无 `_t*.png` 真实截图 |
 | CI | GitHub Actions | 两次 push 的 run 均 `success` |
+| 线上 | <https://jiancang-b3b.pages.dev/> | HTTP 200，标题正确；部署已成功 |
 
 ## 本轮做了什么
 
@@ -47,9 +48,9 @@
 
 ## 下一步（按优先级）
 
-1. **部署到 Cloudflare Pages**（落点：`docs/DEPLOY.md`）
-   - 项目名必须是 `jiancang`；连 Git 后 build `pnpm build`、输出 `dist`。
-   - 上线后实测：PWA 安装、CSP 下 OCR 是否正常、分享卡片、微信预览。
+1. **线上验收**（已部署到 `https://jiancang-b3b.pages.dev/`）
+   - 项目名带 `-b3b`：`jiancang.pages.dev` 被占用，Cloudflare 自动加后缀；全站地址已同步。
+   - 重点实测：PWA 安装/离线、CSP 下 OCR 是否正常、分享卡片二维码、微信预览、`/_t*.png` 是否 404。
 2. **用户复测 OCR**（落点：`src/lib/ocr.ts`、`src/core/layout.ts`）
    - 重点：华泰那张 10 倍误读与负号丢失；基金名称是否还认成图例；框选是否顺手。
    - 真实截图只在 `tests/fixtures/ocr/`，复现：`pnpm dev` → 持仓 → 截图识别。

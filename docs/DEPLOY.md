@@ -7,6 +7,7 @@
   `sitemap.xml`、`manifest.webmanifest`、`sw.js`、`icons/`（PWA 图标）。
 - 纯静态，**没有任何后端依赖**，托管费用为 0。
 - **发布产物里没有真实持仓截图**：`public/_t*.png` 已移到 gitignore 的 `tests/fixtures/`。
+- **当前线上地址**：<https://jiancang-b3b.pages.dev/>（项目名 `jiancang-b3b`，原因见下）
 
 ---
 
@@ -17,7 +18,7 @@ Cloudflare 的 **Workers** 和 **Pages** 都能连 Git，但本项目是纯静�
 | | Pages（正确） | Workers（错误） |
 |---|---|---|
 | 发布物 | 直接托管 `dist/` 静态文件 | 需要 Worker 脚本 / `wrangler` |
-| 网址 | `https://jiancang.pages.dev` | `https://jiancang.<子域>.workers.dev` |
+| 网址 | `https://jiancang-b3b.pages.dev` | `https://jiancang.<子域>.workers.dev` |
 | 构建后步骤 | 自动上传 `dist` | 执行 `npx wrangler deploy` |
 
 **怎么判断建错了**：Deployments 日志最后出现
@@ -29,8 +30,8 @@ Cloudflare 的 **Workers** 和 **Pages** 都能连 Git，但本项目是纯静�
 pnpm 的构建脚本策略拦下，于是退出。
 
 **处理**：不要在这个 Worker 项目里重试。回 **Workers & Pages → Create → Pages** 标签重走下面流程。
-旧的 Worker 项目可以删掉，也可以留着；它不影响 Pages，但它的网址不是 `jiancang.pages.dev`，
-会让 `og:url`、二维码、canonical 全部对不上。
+旧的 Worker 项目可以删掉，也可以留着；它不影响 Pages，但它的网址是 `*.workers.dev`，
+不是 `jiancang-b3b.pages.dev`，会让 `og:url`、二维码、canonical 全部对不上。
 
 ---
 
@@ -41,7 +42,7 @@ pnpm 的构建脚本策略拦下，于是退出。
 1. Cloudflare Dashboard → **Workers & Pages** → **Create**
    - 在弹出的页面选 **Pages** 标签（不是 Workers），再点 **Connect to Git**
    - 找不到 Pages 标签就直接开 <https://dash.cloudflare.com/?to=/:account/pages/new>
-2. 选 `fanpaisk/jiancang`，项目名填 **`jiancang`**
+2. 选 `fanpaisk/jiancang`，项目名填 **`jiancang-b3b`**（`jiancang` 已被占用，实际地址见下）
 3. Framework preset 选 **None**（没有就选 **No framework**）；不要选 **VitePress**
 4. Build command：`pnpm build`；Build output directory：`dist`；Root directory 留空
 5. 环境变量可不配：构建日志已检测到 Node 22。想配就在
@@ -63,24 +64,29 @@ pnpm 的构建脚本策略拦下，于是退出。
 
 1. 打开 https://dash.cloudflare.com ，注册/登录
 2. 左侧 **Workers & Pages** → **Create** → **Pages** → **Upload assets**
-3. **项目名填 `jiancang`**（这个名字会变成你的网址，别填错）
+3. **项目名填 `jiancang-b3b`**（这个名字会变成你的网址；`jiancang` 已被占用）
 4. 把 `G:\减仓工具\dist` **整个文件夹**拖进去 → **Deploy site**
-5. 拿到 `https://jiancang.pages.dev`，可以直接发给别人了
+5. 拿到 `https://jiancang-b3b.pages.dev`，可以直接发给别人了
 
 > 如果拖拽不方便，也可以用命令行：
 > ```bash
-> npx wrangler pages deploy dist --project-name jiancang
+> npx wrangler pages deploy dist --project-name jiancang-b3b
 > ```
 > 首次运行会打开浏览器要求授权。
 
 ### ⚠️ 项目名决定网址
 
-`jiancang` → `https://jiancang.pages.dev`
+当前项目名是 `jiancang-b3b` → `https://jiancang-b3b.pages.dev`。
 
-如果你填了别的名字，比如 `jc-tool`，网址就变成 `https://jc-tool.pages.dev`。**这时必须同步改两个地方**，否则分享预览图会 404：
+`jiancang` 这个二级域名已被占用（请求它返回 522），Cloudflare 创建时自动加了 `-b3b` 后缀。
+所以全站绝对地址都指向 b3b，**不要单独改回 `jiancang`**。
 
-- `index.html` 里的 `og:url`
-- `index.html` 里的 `og:image`
+以后如果换自定义域名或抢回 `jiancang`，必须同步改这些地方，否则二维码/分享预览会 404：
+
+- `src/config.ts` 的 `SITE_URL`
+- `index.html` 的 canonical / `og:url` / `og:image` / `twitter:image` / JSON-LD
+- `public/sitemap.xml`、`public/robots.txt`
+- `scripts/make-qr.py` 里的 URL，改完重跑 `python scripts/make-qr.py`
 
 ---
 
@@ -111,7 +117,7 @@ pnpm 的构建脚本策略拦下，于是退出。
 - [ ] Chrome DevTools → Application → Manifest 无报错；「添加到主屏幕」可安装
 - [ ] 断网刷新，外壳仍能打开（Service Worker 生效）
 - [ ] **在部署环境点一次「截图识别」**：CSP 是否放行 wasm/worker、OCR 是否仍能跑完
-- [ ] 确认 `https://jiancang.pages.dev/_t.png` 等 4 个地址都是 404（真实截图已移走）
+- [ ] 确认 `https://jiancang-b3b.pages.dev/_t.png` 等 4 个地址都是 404（真实截图已移走）
 
 > 微信里打开可能提示"非官方网页"或加载慢，这是 Cloudflare 免费域名的固有情况，不是配置错误。
 
@@ -133,7 +139,7 @@ pnpm 的构建脚本策略拦下，于是退出。
 ## 四、上线之后
 
 1. **PWA 已就绪**：manifest + SW + 图标都在产物里；部署后按上面清单验一次安装与离线。
-2. **分享卡片二维码已内置**：指向 `https://jiancang.pages.dev/`，部署后用手机扫一次确认。
+2. **分享卡片二维码已内置**：指向 `https://jiancang-b3b.pages.dev/`，部署后用手机扫一次确认。
 3. **桌面双栏**：≥960px 左输入右结果，移动端保留三页。
 4. **ESLint / Prettier / Playwright / Lighthouse**：工程收尾。
 

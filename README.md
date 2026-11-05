@@ -7,7 +7,7 @@
 [![CI](https://github.com/fanpaisk/jiancang/actions/workflows/ci.yml/badge.svg)](https://github.com/fanpaisk/jiancang/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-纯前端 · 不上传数据 · 免费开源 · 在线地址（部署后生效）：<https://jiancang.pages.dev/>
+纯前端 · 不上传数据 · 免费开源 · 在线地址：<https://jiancang-b3b.pages.dev/>
 
 演示：`?demo=1`（亏损场景） / `?demo=2`（盈利场景），均为**合成数据**，不是真实持仓。
 

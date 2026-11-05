@@ -5,7 +5,7 @@
   "type": "module",
   "description": "减仓计算器 —— 抄四个数，算清楚该减多少",
   "license": "MIT",
-  "homepage": "https://jiancang.pages.dev/",
+  "homepage": "https://jiancang-b3b.pages.dev/",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/fanpaisk/jiancang.git"

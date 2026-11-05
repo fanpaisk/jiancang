@@ -6,7 +6,7 @@ export const APP_VERSION = typeof __APP_VERSION__ === 'string' ? __APP_VERSION__
 export const BUILD_TIME = typeof __BUILD_TIME__ === 'string' ? __BUILD_TIME__ : ''
 
 /** 线上地址；二维码、分享卡片、canonical 都从这里取 */
-export const SITE_URL = 'https://jiancang.pages.dev/'
+export const SITE_URL = 'https://jiancang-b3b.pages.dev/'
 export const REPO_URL = 'https://github.com/fanpaisk/jiancang'
 export const FEEDBACK_URL = `${REPO_URL}/issues`
 

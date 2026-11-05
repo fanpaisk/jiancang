@@ -10,7 +10,7 @@ from pathlib import Path
 
 import qrcode
 
-URL = "https://jiancang.pages.dev/"
+URL = "https://jiancang-b3b.pages.dev/"
 OUT = Path(__file__).resolve().parent.parent / "src" / "lib" / "qrMatrix.ts"
 
 qr = qrcode.QRCode(

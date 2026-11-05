@@ -134,3 +134,19 @@
 **理由**：工具定位是执行器，不是建议者。「推荐」二字会把规则中位数读成产品意见，
 与硬约束和免责声明互相打架。
 
+## 16. 线上域名落地为 `jiancang-b3b.pages.dev`
+
+**决定**：Cloudflare Pages 项目名用 `jiancang-b3b`，全站绝对地址统一为
+`https://jiancang-b3b.pages.dev/`（`SITE_URL`、canonical、og、sitemap、robots、二维码）。
+
+**理由**：`jiancang` 这个 pages.dev 二级域名已被占用（实测返回 522），Cloudflare 创建项目时
+自动追加了 `-b3b` 后缀。与其让二维码、分享预览、canonical 指向一个 522 页面，不如统一落到
+真实可访问的地址。**取代 #10 中「项目名必须叫 jiancang」的假设**；「先不买域名」仍不变。
+
+**代价**：网址带随机后缀，不像正式产品。以后换自定义域名或抢回 `jiancang` 时，必须同步改
+`src/config.ts`、`index.html`、`public/sitemap.xml`、`public/robots.txt`，并重跑
+`python scripts/make-qr.py`。
+
+**被否**：继续用 `jiancang.pages.dev`（指向别人的 522 页面）；为网址买域名（产品未验证）。
+
+
