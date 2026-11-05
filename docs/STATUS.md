@@ -14,8 +14,9 @@
 |---|---|---|
 | 类型 | `pnpm typecheck` | 退出码 0 |
 | 单测 | `pnpm test` | 10 个文件 / **142 passed**，2.2s |
-| 构建 | `pnpm build` | 成功，主包 211.06 kB（gzip 70.13 kB），CSS 25.47 kB |
+| 构建 | `pnpm build` | 成功，主包 211.17 kB（gzip 70.16 kB），CSS 25.47 kB |
 | 产物 | `dist/` | 13.3 MB，已无 `_t*.png` 真实截图 |
+| CI | GitHub Actions | 两次 push 的 run 均 `success` |
 
 ## 本轮做了什么
 
