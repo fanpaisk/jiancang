@@ -36,6 +36,8 @@ export interface LayoutResult {
   returnRatePct?: number
   /** 份额类别；从名称后缀推断，推断不出为 undefined */
   shareClass?: ShareClass
+  /** 身份字段是否由本机记录补全（仅 UI 使用） */
+  cacheHit?: 'code' | 'name' | 'class'
   /** 当日涨跌幅，百分数；-5.22 表示 -5.22% */
   dayChangePct?: number
   /** 命中并成功取值的字段名，用于在 UI 上打勾 */

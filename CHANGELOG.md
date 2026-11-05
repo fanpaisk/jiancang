@@ -2,6 +2,25 @@
 
 格式参考 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)；版本号遵循 SemVer。
 
+## [1.2.0] - 2026-11-05
+
+### Added
+
+- 本机基金缓存：确认过「名称 + 代码」后写入 localStorage（最多 500 条）；下次 OCR / 粘贴只读到其中一边时，用它补另一边和缺失的 A/C。
+- OCR 核对区会标注「已用本机记录补全」，填入表单时可看到来源。
+- Dependabot：npm 与 GitHub Actions 的每周检查。
+- CI 增加 `pnpm audit --audit-level=high`；本地可用 `pnpm audit`。
+
+### Changed
+
+- `vitest` 从 3.2.7 升级到 4.1.12，移除带 critical 漏洞的 `tinypool`；audit 归零。
+- 浏览器标签标题改为「减仓计算器」。
+
+### Security
+
+- 清空数据时一并清掉本机基金缓存；隐私说明已注明缓存的存在。
+- 保持 CSP 与安全头不变；继续不引入第三方脚本。
+
 ## [1.1.0] - 2026-11-05
 
 ### Added

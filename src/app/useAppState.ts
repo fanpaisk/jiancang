@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { SITE_URL } from '../config'
 import { resolveFee } from '../core/fee'
 import { fmtPct } from '../core/format'
+import { inferShareClass } from '../core/fund'
 import { buildIcs, feeDropDate, icsDate } from '../core/ics'
 import type { ParsedHolding } from '../core/parse'
 import { computeSellPlan, weightAfterSell } from '../core/plan'
@@ -11,6 +12,7 @@ import { recommend } from '../core/recommend'
 import { evaluateRules } from '../core/rules'
 import { clearState, loadState, saveState } from '../core/storage'
 import { toNum } from '../core/util'
+import { clearFundCache, enrichFromCache, rememberFund } from '../lib/fundCacheStore'
 import {
   defaultForm,
   defaultRules,
@@ -73,6 +75,26 @@ export function useAppState() {
     return () => window.clearTimeout(timer)
   }, [form, rules, demo])
 
+  // 名称和代码都齐了才记：下次 OCR 只读到其中一边时可以用本机记录补全
+  useEffect(() => {
+    if (demo) return
+    const code = form.code.trim()
+    const name = form.name.trim()
+    if (!/^\d{6}$/.test(code) || !name || code === '000000') return
+    const inferred = inferShareClass(name)
+    const timer = window.setTimeout(
+      () =>
+        rememberFund({
+          code,
+          name,
+          // 只缓存「名称后缀能对得上」的类别，避免把默认 A 当成已验证信息
+          shareClass: inferred === form.shareClass ? form.shareClass : undefined,
+        }),
+      800,
+    )
+    return () => window.clearTimeout(timer)
+  }, [form.code, form.name, form.shareClass, demo])
+
   const flash = useCallback((message: string) => {
     setToast(message)
     window.clearTimeout(toastTimer.current)
@@ -93,23 +115,29 @@ export function useAppState() {
 
   const applyParsed = useCallback(
     (parsed: ParsedHolding) => {
+      // 代码/名称只读到一边时，用本机已验证的记录补另一边
+      const enriched = enrichFromCache(parsed)
+
       setForm((prev) => {
         const next: FormState = { ...prev }
         // 「填入表单」= 用识别结果覆盖；没认出的一律清空，
         // 否则旧值会冒充新值，比没填更危险
-        next.name = parsed.name ?? ''
-        next.code = parsed.code ?? ''
-        next.shareClass = parsed.shareClass ?? prev.shareClass
-        next.shares = parsed.shares != null ? String(parsed.shares) : ''
-        next.costPerShare = parsed.costPerShare != null ? String(parsed.costPerShare) : ''
-        next.holdDays = parsed.holdDays != null ? String(parsed.holdDays) : ''
-        next.currentWeight = parsed.weight != null ? (parsed.weight * 100).toFixed(2) : ''
-        next.dayChange = parsed.dayChange != null ? (parsed.dayChange * 100).toFixed(2) : ''
+        next.name = enriched.name ?? ''
+        next.code = enriched.code ?? ''
+        next.shareClass = enriched.shareClass ?? prev.shareClass
+        next.shares = enriched.shares != null ? String(enriched.shares) : ''
+        next.costPerShare =
+          enriched.costPerShare != null ? String(enriched.costPerShare) : ''
+        next.holdDays = enriched.holdDays != null ? String(enriched.holdDays) : ''
+        next.currentWeight =
+          enriched.weight != null ? (enriched.weight * 100).toFixed(2) : ''
+        next.dayChange =
+          enriched.dayChange != null ? (enriched.dayChange * 100).toFixed(2) : ''
 
-        if (parsed.nav != null) {
-          next.nav = String(parsed.nav)
-        } else if (parsed.shares && parsed.shares > 0 && parsed.marketValue) {
-          next.nav = (parsed.marketValue / parsed.shares).toFixed(4)
+        if (enriched.nav != null) {
+          next.nav = String(enriched.nav)
+        } else if (enriched.shares && enriched.shares > 0 && enriched.marketValue) {
+          next.nav = (enriched.marketValue / enriched.shares).toFixed(4)
         } else {
           next.nav = ''
         }
@@ -117,27 +145,37 @@ export function useAppState() {
       })
       setManualPct(null)
 
+      if (!demo && enriched.code && enriched.name && enriched.code !== '000000') {
+        const inferred = inferShareClass(enriched.name)
+        rememberFund({
+          code: enriched.code,
+          name: enriched.name,
+          shareClass: inferred === enriched.shareClass ? enriched.shareClass : undefined,
+        })
+      }
+
       const missing = [
-        parsed.shares == null ? '份额' : '',
-        parsed.costPerShare == null ? '成本' : '',
-        parsed.holdDays == null ? '天数' : '',
-        parsed.dayChange == null ? '当日涨跌幅' : '',
+        enriched.shares == null ? '份额' : '',
+        enriched.costPerShare == null ? '成本' : '',
+        enriched.holdDays == null ? '天数' : '',
+        enriched.dayChange == null ? '当日涨跌幅' : '',
       ].filter(Boolean)
-      if (parsed.shareClass == null) {
+      const cacheNote = enriched.cacheHit ? '（已用本机记录补全）' : ''
+      if (enriched.shareClass == null) {
         flash(
           missing.length
-            ? `已填入；未识别的 ${missing.join('、')} 已清空；份额类别请手动确认`
-            : '已填入；份额类别未识别，请手动确认 A/C',
+            ? `已填入；未识别的 ${missing.join('、')} 已清空；份额类别请手动确认${cacheNote}`
+            : `已填入；份额类别未识别，请手动确认 A/C${cacheNote}`,
         )
       } else {
         flash(
           missing.length
-            ? `已填入；未识别的 ${missing.join('、')} 已清空`
-            : '已填入，核对一下再算',
+            ? `已填入；未识别的 ${missing.join('、')} 已清空${cacheNote}`
+            : `已填入，核对一下再算${cacheNote}`,
         )
       }
     },
-    [flash],
+    [demo, flash],
   )
 
   const exitDemo = useCallback(() => {
@@ -218,6 +256,7 @@ export function useAppState() {
     setManualPct(null)
     setDemo(null)
     clearState()
+    clearFundCache()
     syncDemoParam(null)
     flash('已清空')
   }, [flash])

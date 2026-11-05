@@ -110,8 +110,8 @@ export function MoreSheet({ open, onClose, state }: Props) {
         <details className="sheet-details">
           <summary>隐私说明</summary>
           <p>
-            没有账号、没有服务器、没有统计代码。持仓和规则保存在本机
-            <code>localStorage</code>，不会上传。截图识别用的引擎和中文模型从本站加载，
+            没有账号、没有服务器、没有统计代码。持仓、规则，以及你确认过的基金名称/代码缓存，
+            都保存在本机 <code>localStorage</code>，不会上传。截图识别用的引擎和中文模型从本站加载，
             图片不会离开浏览器。换设备时用「导出备份」搬数据。
           </p>
         </details>
@@ -125,6 +125,11 @@ export function MoreSheet({ open, onClose, state }: Props) {
             <dd>内置表只是估算；卖出页上那个数更准，填进「赎回费率」即可覆盖。</dd>
             <dt>换手机怎么办？</dt>
             <dd>旧设备「导出备份」，新设备「导入」，不需要登录。</dd>
+            <dt>代码没识别到？</dt>
+            <dd>
+              代码是选填，不影响计算，手动补一个即可。你确认过一次「名称 + 代码」后，
+              本机会记住；下次只读到其中一个，会尽量用本地记录补另一个。
+            </dd>
             <dt>支持哪些基金？</dt>
             <dd>场外开放式基金。不支持场内 ETF、股票、货币基金和银行理财。</dd>
           </dl>

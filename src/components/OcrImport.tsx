@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { LayoutResult } from '../core/layout'
 import type { ParsedHolding } from '../core/parse'
+import { enrichFromCache } from '../lib/fundCacheStore'
 import { recognizeHoldingImage, statusText, type OcrStatus } from '../lib/ocr'
 
 interface Props {
@@ -133,7 +134,7 @@ export function OcrImport({ onApply, onClose }: Props) {
           setStatus(s)
           setProgress(p)
         })
-        setResult(res)
+        setResult({ ...res, ...enrichFromCache(res) })
         setPhase('done')
       } catch {
         setError('识别失败。换个更清晰的截图，或者只框住持仓那一块再试。')
@@ -320,6 +321,18 @@ export function OcrImport({ onApply, onClose }: Props) {
               </dd>
             </div>
           </dl>
+
+          {result.cacheHit ? (
+            <p className="ocr-note">
+              已用本机记录补全
+              {result.cacheHit === 'code'
+                ? '代码'
+                : result.cacheHit === 'name'
+                  ? '名称'
+                  : '份额类别'}
+              ，请核对。
+            </p>
+          ) : null}
 
           {matched === 0 ? (
             <p className="error">
