@@ -10,17 +10,47 @@
 
 ---
 
+## ⚠️ 先确认：你要建的是 Pages，不是 Worker
+
+Cloudflare 的 **Workers** 和 **Pages** 都能连 Git，但本项目是纯静态站点，必须走 **Pages**。
+
+| | Pages（正确） | Workers（错误） |
+|---|---|---|
+| 发布物 | 直接托管 `dist/` 静态文件 | 需要 Worker 脚本 / `wrangler` |
+| 网址 | `https://jiancang.pages.dev` | `https://jiancang.<子域>.workers.dev` |
+| 构建后步骤 | 自动上传 `dist` | 执行 `npx wrangler deploy` |
+
+**怎么判断建错了**：Deployments 日志最后出现
+`Executing user deploy command: npx wrangler deploy`，并且报
+`ERR_PNPM_IGNORED_BUILDS` / `workerd`。
+
+**这只是部署方式错了，不是代码错了**：日志里 `pnpm build` 已经成功，`dist/` 也生成了；
+失败的是后面的 deploy 步骤——wrangler 想把 Vite 项目改造成 Worker，安装 `workerd` 时被
+pnpm 的构建脚本策略拦下，于是退出。
+
+**处理**：不要在这个 Worker 项目里重试。回 **Workers & Pages → Create → Pages** 标签重走下面流程。
+旧的 Worker 项目可以删掉，也可以留着；它不影响 Pages，但它的网址不是 `jiancang.pages.dev`，
+会让 `og:url`、二维码、canonical 全部对不上。
+
+---
+
 ## 一、推荐：连 Git 自动部署
 
 仓库已经推到 <https://github.com/fanpaisk/jiancang>，CI 在 `.github/workflows/ci.yml`。
 
-1. Cloudflare Dashboard → **Workers & Pages** → **Create** → **Pages** → **Connect to Git**
+1. Cloudflare Dashboard → **Workers & Pages** → **Create**
+   - 在弹出的页面选 **Pages** 标签（不是 Workers），再点 **Connect to Git**
+   - 找不到 Pages 标签就直接开 <https://dash.cloudflare.com/?to=/:account/pages/new>
 2. 选 `fanpaisk/jiancang`，项目名填 **`jiancang`**
-3. Build command：`pnpm build`；Build output directory：`dist`
-4. 环境变量加 `NODE_VERSION=22`（Pages 默认 Node 版本可能偏低）
-5. Deploy；之后每次 push 到 `main` 自动发布，PR 会生成预览地址。
+3. Build command：`pnpm build`；Build output directory：`dist`；Root directory 留空
+4. 环境变量可不配：构建日志已检测到 Node 22。想配就在
+   **Settings → Environment variables → Production** 加 `NODE_VERSION=22`
+5. 点 **Save and Deploy**。之后每次 push 到 `main` 自动发布，PR 会生成预览地址。
 
 > `pnpm build` 的 `prebuild` 会从 `node_modules` 拷 OCR 资源，Cloudflare 构建环境能正常执行。
+>
+> 英文界面对照：Create = 创建；Connect to Git = 连接到 Git；Project name = 项目名称；
+> Build command = 构建命令；Build output directory = 构建输出目录；Save and Deploy = 保存并部署。
 
 ---
 
