@@ -42,15 +42,20 @@ pnpm 的构建脚本策略拦下，于是退出。
    - 在弹出的页面选 **Pages** 标签（不是 Workers），再点 **Connect to Git**
    - 找不到 Pages 标签就直接开 <https://dash.cloudflare.com/?to=/:account/pages/new>
 2. 选 `fanpaisk/jiancang`，项目名填 **`jiancang`**
-3. Build command：`pnpm build`；Build output directory：`dist`；Root directory 留空
-4. 环境变量可不配：构建日志已检测到 Node 22。想配就在
+3. Framework preset 选 **None**（没有就选 **No framework**）；不要选 **VitePress**
+4. Build command：`pnpm build`；Build output directory：`dist`；Root directory 留空
+5. 环境变量可不配：构建日志已检测到 Node 22。想配就在
    **Settings → Environment variables → Production** 加 `NODE_VERSION=22`
-5. 点 **Save and Deploy**。之后每次 push 到 `main` 自动发布，PR 会生成预览地址。
+6. 点 **Save and Deploy**。之后每次 push 到 `main` 自动发布，PR 会生成预览地址。
 
+> **Framework preset 只是帮你预填命令的快捷方式**，不是运行环境。列表里没有 Vite 就选
+> None；VitePress 是文档站生成器，输出目录是 `.vitepress/dist`，和本项目无关。
+>
 > `pnpm build` 的 `prebuild` 会从 `node_modules` 拷 OCR 资源，Cloudflare 构建环境能正常执行。
 >
 > 英文界面对照：Create = 创建；Connect to Git = 连接到 Git；Project name = 项目名称；
-> Build command = 构建命令；Build output directory = 构建输出目录；Save and Deploy = 保存并部署。
+> Framework preset = 框架预设；Build command = 构建命令；Build output directory = 构建输出目录；
+> Save and Deploy = 保存并部署。
 
 ---
 
