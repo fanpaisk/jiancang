@@ -58,6 +58,10 @@ describe('parseHoldingText · 截图真实数据', () => {
     expect(p.name).toBe('嘉实上证科创板芯片ETF联接C')
   })
 
+  it('从名称后缀推断份额类别', () => {
+    expect(p.shareClass).toBe('C')
+  })
+
   it('字段足够直接计算', () => {
     expect(hasEnoughToCompute(p)).toBe(true)
   })
@@ -80,6 +84,22 @@ describe('parseHoldingText · 同屏排版', () => {
   it('没有百分号的收益率不误判', () => {
     const p = parseHoldingText('持有收益率 12.5')
     expect(p.returnRate).toBeUndefined()
+  })
+
+  it('当日涨跌幅转成小数', () => {
+    const p = parseHoldingText('某某科技ETF联接C\n当日涨幅 -5.22%\n持有份额 1000')
+    expect(p.dayChange).toBeCloseTo(-0.0522, 6)
+    expect(p.shareClass).toBe('C')
+  })
+
+  it('当日上涨也能识别', () => {
+    const p = parseHoldingText('某某科技ETF联接C\n当日涨幅 +4.10%\n持有份额 1000')
+    expect(p.dayChange).toBeCloseTo(0.041, 6)
+  })
+
+  it('不会把近1年涨跌幅当成当日涨跌', () => {
+    const p = parseHoldingText('近1年涨跌幅 +4.10%\n持有份额 1000')
+    expect(p.dayChange).toBeUndefined()
   })
 })
 

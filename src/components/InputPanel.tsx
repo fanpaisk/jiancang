@@ -161,8 +161,14 @@ export function InputPanel({ form, set, fee, onApplyParsed, onExample }: Props) 
           inputMode="text"
         />
         <Field
+          label="当日涨跌幅"
+          value={form.dayChange}
+          onChange={(v) => set('dayChange', v)}
+          suffix="%"
+          hint="仅记录，暂不参与规则"
+        />
+        <Field
           label="代码"
-          wide
           value={form.code}
           onChange={(v) => set('code', v)}
           placeholder="选填"

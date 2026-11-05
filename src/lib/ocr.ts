@@ -254,6 +254,17 @@ function mergeResults(a: LayoutResult, b: LayoutResult): LayoutResult {
   }
 
   out.name = a.name ?? b.name
-  out.code = a.code ?? b.code
+
+  const ca = a.conf.code ?? 0
+  const cb = b.conf.code ?? 0
+  if (a.code && b.code) {
+    out.code = cb > ca ? b.code : a.code
+  } else {
+    out.code = a.code ?? b.code
+  }
+  if (out.code) out.conf.code = Math.max(ca, cb)
+
+  // 类别是字符串字段，不走数值合并；两遍识别取先命中的
+  out.shareClass = a.shareClass ?? b.shareClass
   return out
 }

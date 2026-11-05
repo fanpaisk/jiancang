@@ -15,6 +15,8 @@ export interface FormState {
   currentWeight: string
   /** 历史最高净值 */
   peakNav: string
+  /** 百分数，例如 "-5.22"；目前只记录，暂不参与规则 */
+  dayChange: string
 }
 
 export const defaultForm: FormState = {
@@ -28,6 +30,7 @@ export const defaultForm: FormState = {
   feeOverride: '',
   currentWeight: '',
   peakNav: '',
+  dayChange: '',
 }
 
 /**
@@ -45,6 +48,7 @@ export const exampleForm: FormState = {
   feeOverride: '',
   currentWeight: '19.3',
   peakNav: '',
+  dayChange: '',
 }
 
 export interface PersistedApp {
@@ -67,6 +71,7 @@ export const demoProfitForm: FormState = {
   feeOverride: '',
   currentWeight: '28',
   peakNav: '1.5600',
+  dayChange: '',
 }
 
 export type DemoMode = 'loss' | 'profit'
@@ -92,6 +97,7 @@ export function hasUserInput(form: FormState): boolean {
       form.holdDays ||
       form.currentWeight ||
       form.peakNav ||
+      form.dayChange ||
       form.feeOverride,
   )
 }

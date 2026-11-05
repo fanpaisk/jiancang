@@ -6,6 +6,9 @@
  * 维护成本也低：多支持一个平台，通常只是多一条正则。
  */
 
+import { inferShareClass } from './fund'
+import type { ShareClass } from './types'
+
 export interface ParsedHolding {
   name?: string
   code?: string
@@ -19,10 +22,14 @@ export interface ParsedHolding {
   returnRate?: number
   /** 小数，0.193 表示 19.3% */
   weight?: number
+  /** 从名称后缀推断的份额类别；推断不出为 undefined */
+  shareClass?: ShareClass
+  /** 小数，-0.0522 表示 -5.22% */
+  dayChange?: number
 }
 
 const NUM = String.raw`(-?\d[\d,]*(?:\.\d+)?)`
-const PCT = String.raw`(-?\d+(?:\.\d+)?)\s*%`
+const PCT = String.raw`([+-]?\d+(?:\.\d+)?)\s*%`
 
 const RE = {
   shares: new RegExp(String.raw`持有份额[\s：:]*${NUM}`),
@@ -33,6 +40,9 @@ const RE = {
   weight: new RegExp(String.raw`(?:持仓占比|仓位占比)[\s：:]*${PCT}`),
   code: /(?:^|\D)(\d{6})(?:\D|$)/,
   name: /(?:ETF联接|联接|混合|债券|指数|股票|货币|QDII|FOF|基金)[A-C]?$/,
+  dayChange: new RegExp(
+    String.raw`(?:当日涨幅|当日涨跌幅|日涨跌幅|今日涨跌幅|今日涨幅|本日涨幅)[\s：:]*${PCT}`,
+  ),
 } as const
 
 function pickNumber(text: string, re: RegExp): number | undefined {
@@ -64,6 +74,9 @@ export function parseHoldingText(raw: string): ParsedHolding {
   const weight = pickNumber(text, RE.weight)
   if (weight !== undefined) out.weight = weight / 100
 
+  const dayChange = pickNumber(text, RE.dayChange)
+  if (dayChange !== undefined) out.dayChange = dayChange / 100
+
   const code = text.match(RE.code)
   if (code) out.code = code[1]
 
@@ -71,7 +84,10 @@ export function parseHoldingText(raw: string): ParsedHolding {
     .split('\n')
     .map((l) => l.trim())
     .find((l) => l.length > 0 && !/[：:]/.test(l) && RE.name.test(l))
-  if (nameLine) out.name = nameLine
+  if (nameLine) {
+    out.name = nameLine
+    out.shareClass = inferShareClass(nameLine) ?? undefined
+  }
 
   return out
 }

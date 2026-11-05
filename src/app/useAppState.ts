@@ -99,10 +99,12 @@ export function useAppState() {
         // 否则旧值会冒充新值，比没填更危险
         next.name = parsed.name ?? ''
         next.code = parsed.code ?? ''
+        next.shareClass = parsed.shareClass ?? prev.shareClass
         next.shares = parsed.shares != null ? String(parsed.shares) : ''
         next.costPerShare = parsed.costPerShare != null ? String(parsed.costPerShare) : ''
         next.holdDays = parsed.holdDays != null ? String(parsed.holdDays) : ''
         next.currentWeight = parsed.weight != null ? (parsed.weight * 100).toFixed(2) : ''
+        next.dayChange = parsed.dayChange != null ? (parsed.dayChange * 100).toFixed(2) : ''
 
         if (parsed.nav != null) {
           next.nav = String(parsed.nav)
@@ -119,8 +121,21 @@ export function useAppState() {
         parsed.shares == null ? '份额' : '',
         parsed.costPerShare == null ? '成本' : '',
         parsed.holdDays == null ? '天数' : '',
+        parsed.dayChange == null ? '当日涨跌幅' : '',
       ].filter(Boolean)
-      flash(missing.length ? `已填入；未识别的 ${missing.join('、')} 已清空` : '已填入，核对一下再算')
+      if (parsed.shareClass == null) {
+        flash(
+          missing.length
+            ? `已填入；未识别的 ${missing.join('、')} 已清空；份额类别请手动确认`
+            : '已填入；份额类别未识别，请手动确认 A/C',
+        )
+      } else {
+        flash(
+          missing.length
+            ? `已填入；未识别的 ${missing.join('、')} 已清空`
+            : '已填入，核对一下再算',
+        )
+      }
     },
     [flash],
   )

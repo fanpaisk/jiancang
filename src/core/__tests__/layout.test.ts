@@ -104,6 +104,10 @@ describe('parseLayout · 真实截图坐标', () => {
     expect(r.code).toBe('017470')
   })
 
+  it('从名称后缀推断份额类别', () => {
+    expect(r.shareClass).toBe('C')
+  })
+
   it('没读到净值时，用「成本 × (1+收益率)」反推', () => {
     expect(r.nav).toBeCloseTo(2.0459, 3)
   })
@@ -125,6 +129,51 @@ describe('parseLayout · 标签与数值同行', () => {
     const r = parseLayout(words)
     expect(r.shares).toBeCloseTo(593.28, 6)
     expect(r.costPerShare).toBeCloseTo(1.25, 6)
+  })
+})
+
+describe('parseLayout · 代码与当日涨跌幅', () => {
+  it('优先取基金名附近的 6 位代码，不取下方金额里的 6 位数字', () => {
+    const words = [
+      W('某某科技ETF联接C', 80, 600, 40),
+      W('123456', 60, 240, 700),
+      W('017470', 500, 650, 72),
+    ]
+    const r = parseLayout(words)
+    expect(r.code).toBe('017470')
+    expect(r.shareClass).toBe('C')
+  })
+
+  it('代码和 C 类后缀粘在一起也能提取', () => {
+    const r = parseLayout([
+      W('某某科技ETF联接C', 80, 600, 40),
+      W('017470C', 500, 700, 72),
+    ])
+    expect(r.code).toBe('017470')
+  })
+
+  it('金额的整数部分不会被当成代码', () => {
+    const r = parseLayout([
+      W('某某科技ETF联接C', 80, 600, 40),
+      W('123456.78', 500, 700, 72),
+    ])
+    expect(r.code).toBeUndefined()
+  })
+
+  it('只认「当日」，不会把「近1年涨跌幅」当成当天涨跌', () => {
+    const words = [
+      W('近1年涨跌幅', 40, 180, 100),
+      W('+4.10%', 190, 280, 100),
+      W('当日涨幅', 40, 160, 200),
+      W('-5.22%', 170, 270, 200),
+    ]
+    const r = parseLayout(words)
+    expect(r.dayChangePct).toBeCloseTo(-5.22, 6)
+  })
+
+  it('名称没有类别后缀时不猜类别', () => {
+    const r = parseLayout([W('某某灵活配置混合', 80, 600, 40)])
+    expect(r.shareClass).toBeUndefined()
   })
 })
 
@@ -152,6 +201,12 @@ describe('parseOcrNumber', () => {
   it('百分数', () => {
     const r = parseOcrNumber('19.3%')
     expect(r?.value).toBeCloseTo(19.3, 6)
+    expect(r?.percent).toBe(true)
+  })
+
+  it('带正号的百分数', () => {
+    const r = parseOcrNumber('+4.10%')
+    expect(r?.value).toBeCloseTo(4.1, 6)
     expect(r?.percent).toBe(true)
   })
 

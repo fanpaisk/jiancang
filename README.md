@@ -257,7 +257,7 @@ src/
 ```bash
 pnpm install
 pnpm dev        # 开发服务器（predev 会先拷 OCR 资源）
-pnpm test       # 142 个用例
+pnpm test       # 160 个用例
 pnpm typecheck  # tsc --noEmit
 pnpm build      # 产物在 dist/
 pnpm verify     # typecheck + test + build，提交前跑这一条
@@ -301,6 +301,8 @@ weightPct 19.3 · marketValue 1209.7 · returnRatePct -31.42
 ```
 
 还有一个真实的坑：`1,209.70` 的千分位逗号被识别成小数点，变成 `1.209.70`。`parseOcrNumber` 专门处理了这个模式（两个点且中间是三位数 → 第一个点是千分位）。
+
+除了数字，核对列表还会列出**基金名称、代码、A/C 类别**：代码只从页面上部/名称附近找，类别从名称后缀推断，推断不出就提示手选，不会静默默认 A。**当日涨跌幅**也会识别，但目前只记录，不参与规则。
 
 ### 三个工程决策
 

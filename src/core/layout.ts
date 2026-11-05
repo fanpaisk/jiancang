@@ -9,6 +9,9 @@
  * 这里是纯函数，不依赖 DOM 也不依赖 Tesseract，可以直接用真实 OCR 坐标做测试。
  */
 
+import { inferShareClass } from './fund'
+import type { ShareClass } from './types'
+
 export interface OcrWord {
   text: string
   x0: number
@@ -31,6 +34,10 @@ export interface LayoutResult {
   nav?: number
   /** 百分数，-31.42 表示 -31.42% */
   returnRatePct?: number
+  /** 份额类别；从名称后缀推断，推断不出为 undefined */
+  shareClass?: ShareClass
+  /** 当日涨跌幅，百分数；-5.22 表示 -5.22% */
+  dayChangePct?: number
   /** 命中并成功取值的字段名，用于在 UI 上打勾 */
   matched: string[]
   /** 每个字段来源词的平均置信度，用于两次识别结果合并时择优 */
@@ -45,6 +52,7 @@ export const FIELD_KEYS = [
   'holdDays',
   'nav',
   'returnRatePct',
+  'dayChangePct',
 ] as const
 
 export type FieldKey = (typeof FIELD_KEYS)[number]
@@ -73,6 +81,11 @@ const FIELD_LABELS: { key: FieldKey; aliases: string[] }[] = [
   { key: 'holdDays', aliases: ['持有天数', '持仓天数', '天数'] },
   { key: 'nav', aliases: ['最新净值', '单位净值', '净值'] },
   { key: 'returnRatePct', aliases: ['持有收益率', '持仓收益率', '收益率'] },
+  // 只认明确的「当日」，避免把「近1年涨跌幅」当成当天涨跌
+  {
+    key: 'dayChangePct',
+    aliases: ['当日涨幅', '当日涨跌幅', '日涨跌幅', '今日涨跌幅', '今日涨幅', '本日涨幅'],
+  },
 ]
 
 /** 把词按 y 聚成行，并把行内文字拼起来、记录每个字符落在哪个词的 x 区间里 */
@@ -130,6 +143,8 @@ export function parseOcrNumber(raw: string): { value: number; percent: boolean }
   let t = raw.replace(/[\s,，]/g, '').replace(/[¥￥$]/g, '')
   const percent = t.includes('%')
   t = t.replace(/%/g, '')
+  // OCR 有时会把正号识别出来；Number('+4.1') 是合法的
+  t = t.replace(/^\+/, '')
   // 「1.8825(11-03)」这种带日期的净值：只取括号前的数字
   t = t.replace(/[（(].*$/, '')
 
@@ -212,10 +227,50 @@ const PLAUSIBLE: Record<FieldKey, (v: number) => boolean> = {
   marketValue: (v) => v > 0 && v < 1e9,
   nav: (v) => v > 0.01 && v < 1000,
   returnRatePct: (v) => v > -100 && v < 1000,
+  dayChangePct: (v) => v > -100 && v < 100,
 }
 
 /** 低于这个置信度的词不可信 */
 const MIN_CONF = 20
+
+/**
+ * 只从页面上部 / 基金名附近找 6 位代码。
+ * 全场乱找会把金额、日期里的 6 位数字误当代码；找不到就空着，不猜。
+ */
+function pickCode(
+  words: OcrWord[],
+  nameLine: Line | undefined,
+  pageBottom: number,
+): { code: string; conf: number } | null {
+  const candidates: { code: string; conf: number; top: number; near: number }[] = []
+
+  for (const w of words) {
+    const text = w.text.trim().replace(/[.。:：,，]+$/, '')
+    // 只认「6 位数字」或「6 位数字 + A/C 类别后缀」，
+    // 避免把 123456.78 这类金额的整数部分当成代码
+    const m = text.match(/^(\d{6})(?:[A-Ca-c])?$/)
+    if (!m) continue
+    const conf = w.conf ?? 0
+    if (conf < MIN_CONF) continue
+
+    const y = (w.y0 + w.y1) / 2
+    const top = pageBottom > 0 ? y / pageBottom : 1
+    const near = nameLine
+      ? Math.abs(y - (nameLine.y0 + nameLine.y1) / 2)
+      : Number.POSITIVE_INFINITY
+    candidates.push({ code: m[1], conf, top, near })
+  }
+
+  if (!candidates.length) return null
+
+  // 优先页面上部（标题/代码行），再优先离基金名近的
+  const header = candidates.filter((c) => c.top <= 0.45)
+  const pool = header.length ? header : candidates.filter((c) => c.near <= 240)
+  if (!pool.length) return null
+
+  pool.sort((a, b) => a.near - b.near || b.conf - a.conf)
+  return { code: pool[0].code, conf: pool[0].conf }
+}
 
 export function parseLayout(words: OcrWord[]): LayoutResult {
   const lines = groupLines(words)
@@ -238,6 +293,7 @@ export function parseLayout(words: OcrWord[]): LayoutResult {
     else if (field.key === 'marketValue') result.marketValue = value
     else if (field.key === 'nav') result.nav = value
     else if (field.key === 'returnRatePct') result.returnRatePct = value
+    else if (field.key === 'dayChangePct') result.dayChangePct = value
 
     result.conf[field.key] = picked.conf
     result.matched.push(field.key)
@@ -260,11 +316,14 @@ export function parseLayout(words: OcrWord[]): LayoutResult {
       .replace(/\s+/g, '')
       .replace(/详情[>›»]?$/, '')
       .replace(/[>›»]+$/, '')
+    result.shareClass = inferShareClass(result.name) ?? undefined
   }
 
-  // 基金代码：6 位数字
-  const codeWord = words.find((w) => /^\d{6}$/.test(w.text.trim()))
-  if (codeWord) result.code = codeWord.text.trim()
+  const code = pickCode(words, nameLine, pageBottom)
+  if (code) {
+    result.code = code.code
+    result.conf.code = code.conf
+  }
 
   // 没读到净值时，用「单位成本 × (1 + 收益率)」反推
   if (result.nav == null && result.costPerShare != null && result.returnRatePct != null) {

@@ -25,6 +25,11 @@ const FIELD_ROWS: { key: keyof LayoutResult; label: string; format: (v: number) 
   { key: 'weightPct', label: '持仓占比', format: (v) => `${v.toFixed(2)}%` },
   { key: 'marketValue', label: '持有金额', format: (v) => `¥${v.toFixed(2)}` },
   { key: 'returnRatePct', label: '收益率', format: (v) => `${v.toFixed(2)}%` },
+  {
+    key: 'dayChangePct',
+    label: '当日涨跌幅',
+    format: (v) => `${v >= 0 ? '+' : ''}${v.toFixed(2)}%`,
+  },
 ]
 
 const MIN_BOX = 24
@@ -49,6 +54,8 @@ function toParsed(r: LayoutResult): ParsedHolding {
     nav: r.nav,
     weight: r.weightPct != null ? r.weightPct / 100 : undefined,
     returnRate: r.returnRatePct != null ? r.returnRatePct / 100 : undefined,
+    shareClass: r.shareClass,
+    dayChange: r.dayChangePct != null ? r.dayChangePct / 100 : undefined,
   }
 }
 
@@ -295,6 +302,25 @@ export function OcrImport({ onApply, onClose }: Props) {
 
       {phase === 'done' && result ? (
         <>
+          <dl className="ocr-identity">
+            <div>
+              <dt>基金名称</dt>
+              <dd>{result.name ?? '未识别'}</dd>
+            </div>
+            <div>
+              <dt>代码</dt>
+              <dd>{result.code ?? '未识别'}</dd>
+            </div>
+            <div>
+              <dt>份额类别</dt>
+              <dd>
+                {result.shareClass
+                  ? `${result.shareClass} 类（按名称自动识别）`
+                  : '未识别，请手动选择 A/C'}
+              </dd>
+            </div>
+          </dl>
+
           {matched === 0 ? (
             <p className="error">
               没认出持仓字段。回去框住持仓卡片再试，或用「粘贴识别」。

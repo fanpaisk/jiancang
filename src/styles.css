@@ -1300,6 +1300,34 @@ details[open] > .rules-summary::after {
   margin-bottom: 10px;
 }
 
+.ocr-identity {
+  display: grid;
+  gap: 4px;
+  margin: 0 0 10px;
+  padding: 2px 0 10px;
+  border-bottom: 1px dashed var(--line);
+}
+
+.ocr-identity > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13px;
+}
+
+.ocr-identity dt {
+  flex: none;
+  color: var(--muted);
+}
+
+.ocr-identity dd {
+  margin: 0;
+  font-weight: 600;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
 .ocr-fields {
   list-style: none;
   margin: 0 0 8px;

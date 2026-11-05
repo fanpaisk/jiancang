@@ -1,7 +1,7 @@
 {
   "name": "jiancang",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.1.0",
   "type": "module",
   "description": "减仓计算器 —— 抄四个数，算清楚该减多少",
   "license": "MIT",

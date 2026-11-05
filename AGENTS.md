@@ -47,7 +47,7 @@ styles/      tokens.css（设计令牌）+ styles.css（组件）+ shell.css（�
 ```bash
 pnpm install
 pnpm dev         # 开发服；predev 会自动把 OCR 资源拷进 public/
-pnpm test        # 142 个用例
+pnpm test        # 160 个用例
 pnpm typecheck   # tsc --noEmit
 pnpm build       # 产物在 dist/（约 13.3MB，主要是三份 wasm 变体）
 pnpm verify      # typecheck + test + build，提交前跑这一条
