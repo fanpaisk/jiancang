@@ -37,6 +37,7 @@
    - 首次使用三步引导（可跳过，localStorage 记住）。
    - 更多弹层：导出/导入/清空、计算口径、隐私说明、FAQ、版本、GitHub/反馈、安装 PWA。
    - PWA：manifest + 192/512/maskable/apple-touch 图标 + 手写 Service Worker。
+   - 分享卡片右下角二维码：预生成矩阵（`src/lib/qrMatrix.ts`），运行时零依赖。
    - CSP、缓存头、canonical、og:locale、twitter、JSON-LD、sitemap 由静态文件补齐。
 4. **工程化**
    - `git init`，推送 <https://github.com/fanpaisk/jiancang>。
@@ -51,9 +52,8 @@
 2. **用户复测 OCR**（落点：`src/lib/ocr.ts`、`src/core/layout.ts`）
    - 重点：华泰那张 10 倍误读与负号丢失；基金名称是否还认成图例；框选是否顺手。
    - 真实截图只在 `tests/fixtures/ocr/`，复现：`pnpm dev` → 持仓 → 截图识别。
-3. **分享卡片二维码**：固定指向 `https://jiancang.pages.dev/`，构建期生成，零运行时依赖。
-4. **桌面双栏**（≥960px）：左侧输入、右侧结果常驻；移动端保留三页。
-5. **工程收尾**：ESLint + Prettier、Playwright 冒烟、Lighthouse 验收、深色模式。
+3. **桌面双栏**（≥960px）：左侧输入、右侧结果常驻；移动端保留三页。
+4. **工程收尾**：ESLint + Prettier、Playwright 冒烟、Lighthouse 验收、深色模式。
 
 ## 已知缺陷 / 风险
 

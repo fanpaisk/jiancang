@@ -7,6 +7,7 @@
  */
 
 import { fmtMoney, fmtPct, fmtShares } from '../core/format'
+import { QR_ROWS, QR_SIZE } from './qrMatrix'
 
 export interface ShareCardData {
   presetName?: string
@@ -68,6 +69,26 @@ function truncate(ctx: CanvasRenderingContext2D, value: string, maxWidth: number
     out = out.slice(0, -1)
   }
   return `${out}…`
+}
+
+/** 画预生成的二维码矩阵（含静区），不依赖任何二维码库或图片加载 */
+function drawQr(ctx: CanvasRenderingContext2D, x: number, y: number, size: number): void {
+  ctx.fillStyle = '#ffffff'
+  roundRect(ctx, x - 5, y - 5, size + 10, size + 10, 8)
+  ctx.fill()
+
+  ctx.fillStyle = '#0f172a'
+  const cell = size / QR_SIZE
+  for (let r = 0; r < QR_SIZE; r += 1) {
+    for (let c = 0; c < QR_SIZE; c += 1) {
+      if (QR_ROWS[r][c] !== '1') continue
+      const left = Math.round(x + c * cell)
+      const top = Math.round(y + r * cell)
+      const right = Math.round(x + (c + 1) * cell)
+      const bottom = Math.round(y + (r + 1) * cell)
+      ctx.fillRect(left, top, right - left, bottom - top)
+    }
+  }
 }
 
 export function renderShareCard(data: ShareCardData): HTMLCanvasElement {
@@ -180,6 +201,13 @@ export function renderShareCard(data: ShareCardData): HTMLCanvasElement {
       `500 24px ${FONT}`,
       '#2563eb',
     )
+
+    // 二维码固定在右下角，扫码回到站点
+    const qrSize = 132
+    const qrX = W - PAD - qrSize
+    const qrY = 858
+    text(ctx, '扫码打开', W - PAD, qrY - 12, `500 20px ${FONT}`, '#94a3b8', 'right')
+    drawQr(ctx, qrX, qrY, qrSize)
   }
 
   return canvas

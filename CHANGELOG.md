@@ -12,6 +12,7 @@
 - PWA：manifest、192/512/maskable/apple-touch 图标、Service Worker（外壳预缓存 + OCR 按需缓存）。
 - 设计令牌 `styles/tokens.css`；通用原语 `ui/Button`、`ui/Sheet`、`ui/Icon`、`ui/ErrorBoundary`。
 - 渲染错误边界；示例数据黄色横幅与分享卡片水印。
+- 分享卡片右下角预生成二维码（`src/lib/qrMatrix.ts`），运行时零依赖。
 - CSP、canonical、og:locale、twitter、JSON-LD、sitemap 相关静态文件。
 - GitHub Actions CI；`pnpm verify`；`.editorconfig` / `.gitattributes` / `.nvmrc`。
 - 版本与构建日期注入：`__APP_VERSION__` / `__BUILD_TIME__`。
