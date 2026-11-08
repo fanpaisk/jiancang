@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 在线体验 / Live demo
+    url: https://jiancang-b3b.pages.dev/
+    about: 先在线上版本确认问题能不能复现
+  - name: 安全漏洞（私密报告）
+    url: https://github.com/fanpaisk/jiancang/security
+    about: 不要在公开 issue 里贴漏洞细节或真实持仓截图

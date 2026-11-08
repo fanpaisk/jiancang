@@ -61,6 +61,9 @@
 7. **安全收尾**
    - `vitest` 升级到 4.x，移除了带 critical 漏洞的 `tinypool`；`pnpm audit` 当前 0 漏洞。
    - 新增 Dependabot（npm + GitHub Actions）与 CI 的 audit 步骤。
+8. **GitHub 门面**
+   - 仓库 About 描述、Website、topics、Social preview；README 首屏加 TL;DR、状态行和文档入口。
+   - 新增 `SECURITY.md`、`CONTRIBUTING.md`、bug/feature issue 模板；`docs/social-preview.png` 与生成脚本入库。
 
 ## 下一步（按优先级）
 

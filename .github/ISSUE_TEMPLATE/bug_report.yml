@@ -1,0 +1,64 @@
+name: Bug 报告
+description: 页面、计算或截图识别出错了
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感谢反馈。请先确认线上版本能否复现：<https://jiancang-b3b.pages.dev/>
+
+        **不要上传包含真实持仓的截图**；如果必须，请先打码。
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: 发生了什么
+      description: 实际看到的现象
+      placeholder: 例如：OCR 识别后基金代码为空，但名称是对的
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: 复现步骤
+      placeholder: |
+        1. 打开 …
+        2. 点击 …
+        3. 看到 …
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: 你期望的结果
+  - type: input
+    id: environment
+    attributes:
+      label: 环境
+      placeholder: iPhone 15 / iOS 18 / Safari；或 Windows 11 / Chrome 131
+    validations:
+      required: true
+  - type: dropdown
+    id: where
+    attributes:
+      label: 出现位置
+      options:
+        - 线上 jiancang-b3b.pages.dev
+        - 本地 pnpm dev
+        - "?demo=1 / ?demo=2 示例模式"
+        - 不确定
+    validations:
+      required: true
+  - type: textarea
+    id: console
+    attributes:
+      label: 控制台报错
+      description: 可选。浏览器 F12 → Console，有红色报错就贴上来
+      render: shell
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: 确认
+      options:
+        - label: 我已确认截图/文字里不包含真实持仓信息
+          required: true

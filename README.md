@@ -5,7 +5,12 @@
 ![预览](docs/preview.png)
 
 [![CI](https://github.com/fanpaisk/jiancang/actions/workflows/ci.yml/badge.svg)](https://github.com/fanpaisk/jiancang/actions/workflows/ci.yml)
+[![Live](https://img.shields.io/badge/Live-jiancang--b3b.pages.dev-2563eb)](https://jiancang-b3b.pages.dev/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
+**30 秒了解**：填四个数（份额 / 单位成本 / 当前净值 / 持有天数）→ 选一个流派或自己调规则 → 看该减多少、付多少赎回费、现在减还是等几天。纯前端、零后端，数据只存浏览器；只做场外开放式基金，不做投资建议。
+
+**状态**：v1.2.0 · 171 个测试 · CI 通过 · [在线体验](https://jiancang-b3b.pages.dev/) · [更新日志](CHANGELOG.md)
 
 纯前端 · 不上传数据 · 免费开源 · 在线地址：<https://jiancang-b3b.pages.dev/>
 
@@ -336,6 +341,16 @@ weightPct 19.3 · marketValue 1209.7 · returnRatePct -31.42
 - 内置费率表是**估算**，真实费率以平台为准（UI 上始终标注）
 - 不支持分笔 FIFO 精确费用计算——这是刻意的取舍，不是遗漏
 - 只支持单只基金
+
+---
+
+## 文档
+
+- [决策记录](docs/DECISIONS.md)：每个决定的理由与被否方案
+- [当前状态](docs/STATUS.md)：下一步、已知缺陷、验收结果
+- [部署说明](docs/DEPLOY.md)：Cloudflare Pages、CSP、上线检查
+- [更新日志](CHANGELOG.md)
+- [安全策略](SECURITY.md) · [参与贡献](CONTRIBUTING.md) · [问题反馈](https://github.com/fanpaisk/jiancang/issues/new/choose)
 
 ---
 
